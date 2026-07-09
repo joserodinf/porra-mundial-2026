@@ -212,6 +212,15 @@
     text-transform:none;
     border-bottom:none;
   }
+  .cambio-puesto{
+    display:inline-block;
+    margin-left:6px;
+    font-size:.8rem;
+    font-weight:700;
+  }
+  .cambio-puesto.sube{ color:#1a9c4b; }
+  .cambio-puesto.baja{ color:#d1373f; }
+  .cambio-puesto.igual{ color:#bbb; }
 </style>
 </head>
 <body>
@@ -267,6 +276,12 @@
     .map(p => ({ nombre: p, puntos: totales[p] }))
     .sort((a,b) => b.puntos - a.puntos);
 
+  // --- puestos anteriores (para las flechas de subida/bajada) ---
+  const puestoAnterior = {};
+  if(typeof rankingAnterior !== "undefined" && Array.isArray(rankingAnterior)){
+    rankingAnterior.forEach((nombre, i) => { puestoAnterior[nombre] = i + 1; });
+  }
+
   const tbody = document.querySelector("#tabla-clasificacion tbody");
   ranking.forEach((r, i) => {
     const puesto = i+1;
@@ -275,10 +290,22 @@
     else if(puesto===2) clase="plata";
     else if(puesto===3) clase="bronce";
 
+    let cambioHtml = "";
+    const anterior = puestoAnterior[r.nombre];
+    if(anterior !== undefined){
+      if(anterior > puesto){
+        cambioHtml = `<span class="cambio-puesto sube" title="Sube ${anterior - puesto} puesto(s)">▲ ${anterior - puesto}</span>`;
+      } else if(anterior < puesto){
+        cambioHtml = `<span class="cambio-puesto baja" title="Baja ${puesto - anterior} puesto(s)">▼ ${puesto - anterior}</span>`;
+      } else {
+        cambioHtml = `<span class="cambio-puesto igual" title="Se mantiene">—</span>`;
+      }
+    }
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><span class="puesto ${clase}">${puesto}</span></td>
-      <td>${r.nombre}</td>
+      <td>${r.nombre}${cambioHtml}</td>
       <td class="puntos-total">${r.puntos} pts</td>
     `;
     tbody.appendChild(tr);
