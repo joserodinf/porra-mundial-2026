@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Porra del Mundial 2026</title>
+<style>
+  :root{
+    --verde:#0b6e4f;
+    --verde-osc:#074a35;
+    --dorado:#f5b400;
+    --gris:#f4f4f4;
+    --texto:#222;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Segoe UI",Roboto,Arial,sans-serif;
+    background:var(--gris);
+    color:var(--texto);
+  }
+  header{
+    background:linear-gradient(135deg,var(--verde),var(--verde-osc));
+    color:#fff;
+    padding:28px 16px;
+    text-align:center;
+  }
+  header h1{
+    margin:0 0 4px;
+    font-size:1.8rem;
+  }
+  header p{
+    margin:0;
+    opacity:.85;
+    font-size:.95rem;
+  }
+  main{
+    max-width:1100px;
+    margin:0 auto;
+    padding:24px 16px 60px;
+  }
+  .fila-superior{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:24px;
+    align-items:start;
+  }
+  @media (max-width:760px){
+    .fila-superior{
+      grid-template-columns:1fr;
+    }
+  }
+  .col-proximos .partidos-grid{
+    grid-template-columns:1fr;
+  }
+  section{
+    background:#fff;
+    border-radius:12px;
+    box-shadow:0 2px 8px rgba(0,0,0,.08);
+    padding:20px;
+    margin-bottom:24px;
+  }
+  h2{
+    margin-top:0;
+    font-size:1.2rem;
+    border-bottom:2px solid var(--dorado);
+    padding-bottom:8px;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:.95rem;
+  }
+  th,td{
+    padding:10px 8px;
+    text-align:left;
+    border-bottom:1px solid #eee;
+  }
+  th{
+    color:#666;
+    font-weight:600;
+    font-size:.85rem;
+    text-transform:uppercase;
+  }
+  #clasificacion tr:first-child td{
+    font-weight:700;
+  }
+  .puesto{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:var(--verde);
+    color:#fff;
+    font-size:.8rem;
+    margin-right:8px;
+  }
+  .puesto.oro{background:var(--dorado);color:#222;}
+  .puesto.plata{background:#c0c0c0;color:#222;}
+  .puesto.bronce{background:#cd7f32;color:#fff;}
+  .puntos-total{
+    font-weight:700;
+    color:var(--verde-osc);
+  }
+  .partido-header{
+    font-weight:600;
+  }
+  .partido-fecha{
+    color:#888;
+    font-size:.85rem;
+    font-weight:400;
+  }
+  footer{
+    text-align:center;
+    color:#999;
+    font-size:.8rem;
+    padding-bottom:20px;
+  }
+  .badge-pts{
+    display:inline-block;
+    min-width:22px;
+    padding:2px 6px;
+    border-radius:6px;
+    background:var(--gris);
+    font-size:.85rem;
+    text-align:center;
+  }
+  .badge-pts.cero{
+    color:#aaa;
+  }
+  #detalle-partidos{
+    overflow-x:auto;
+  }
+  #tabla-detalle{
+    min-width:100%;
+    white-space:nowrap;
+  }
+  #tabla-detalle th, #tabla-detalle td{
+    text-align:center;
+  }
+  #tabla-detalle th.col-participante, #tabla-detalle td.col-participante{
+    text-align:left;
+    position:sticky;
+    left:0;
+    background:#fff;
+    z-index:1;
+    white-space:normal;
+  }
+  #tabla-detalle thead th.col-participante{
+    background:#fff;
+    z-index:2;
+  }
+  #tabla-detalle th abbr{
+    text-decoration:none;
+    border-bottom:1px dotted #999;
+    cursor:help;
+  }
+  .partidos-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(230px, 1fr));
+    gap:12px;
+  }
+  .partido-card{
+    border:1px solid #eee;
+    border-radius:10px;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+  .partido-card .equipos{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+  }
+  .partido-card .equipo{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-weight:600;
+    font-size:.95rem;
+  }
+  .partido-card .equipo .bandera{
+    font-size:1.1rem;
+  }
+  .partido-card .fecha-hora{
+    text-align:right;
+    color:#888;
+    font-size:.85rem;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .partido-card .fecha-hora .hora{
+    display:block;
+    color:var(--verde-osc);
+    font-weight:700;
+    font-size:1rem;
+  }
+  .badge-puntos-ronda{
+    display:inline-block;
+    background:var(--dorado);
+    color:#222;
+    font-size:.7rem;
+    font-weight:700;
+    padding:2px 8px;
+    border-radius:999px;
+    vertical-align:middle;
+    text-transform:none;
+    border-bottom:none;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>⚽ Porra del Mundial 2026</h1>
+  <p id="subtitulo">Clasificación en vivo</p>
+</header>
+
+<main>
+  <div class="fila-superior">
+    <section>
+      <h2>Clasificación general</h2>
+      <table id="tabla-clasificacion">
+        <thead>
+          <tr><th>#</th><th>Participante</th><th>Puntos</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <aside class="col-proximos" id="seccion-proximos">
+      <section>
+        <h2>Próximos partidos <span class="badge-puntos-ronda" id="badge-puntos-ronda"></span></h2>
+        <div class="partidos-grid" id="proximos-partidos"></div>
+      </section>
+    </aside>
+  </div>
+
+  <section>
+    <h2>Detalle por partido</h2>
+    <div id="detalle-partidos"></div>
+  </section>
+</main>
+
+<footer>Última actualización: <span id="fecha-actualizacion"></span></footer>
+
+<script src="datos.js"></script>
+<script>
+(function(){
+
+  // --- calcular totales ---
+  const totales = {};
+  participantes.forEach(p => totales[p] = 0);
+  partidos.forEach(partido => {
+    participantes.forEach(p => {
+      totales[p] += (partido.puntos[p] || 0);
+    });
+  });
+
+  // --- ordenar clasificación ---
+  const ranking = participantes
+    .map(p => ({ nombre: p, puntos: totales[p] }))
+    .sort((a,b) => b.puntos - a.puntos);
+
+  const tbody = document.querySelector("#tabla-clasificacion tbody");
+  ranking.forEach((r, i) => {
+    const puesto = i+1;
+    let clase = "";
+    if(puesto===1) clase="oro";
+    else if(puesto===2) clase="plata";
+    else if(puesto===3) clase="bronce";
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><span class="puesto ${clase}">${puesto}</span></td>
+      <td>${r.nombre}</td>
+      <td class="puntos-total">${r.puntos} pts</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // --- próximos partidos ---
+  const contProximos = document.getElementById("proximos-partidos");
+  const seccionProximos = document.getElementById("seccion-proximos");
+  if(typeof proximosPartidos === "undefined" || proximosPartidos.length === 0){
+    seccionProximos.style.display = "none";
+  } else {
+    const badgePuntos = document.getElementById("badge-puntos-ronda");
+    if(typeof puntosRonda !== "undefined" && puntosRonda){
+      badgePuntos.textContent = `+${puntosRonda} ${puntosRonda === 1 ? "punto" : "puntos"}`;
+    }
+    contProximos.innerHTML = proximosPartidos.map(p => `
+      <div class="partido-card">
+        <div class="equipos">
+          <div class="equipo"><span class="bandera">${p.banderaLocal || "⚽"}</span> ${p.local}</div>
+          <div class="equipo"><span class="bandera">${p.banderaVisitante || "⚽"}</span> ${p.visitante}</div>
+        </div>
+        <div class="fecha-hora">
+          ${p.fecha}
+          <span class="hora">${p.hora}</span>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  // --- detalle por partido: una tabla con una columna por fase/partido ---
+  const cont = document.getElementById("detalle-partidos");
+  if(partidos.length === 0){
+    cont.innerHTML = "<p>Todavía no hay partidos registrados.</p>";
+  } else {
+    // etiqueta corta para la cabecera (quita el paréntesis aclaratorio, si lo hay)
+    const etiqueta = partido => partido.equipos.split(" (")[0];
+    const tooltip = partido => `${partido.equipos} — ${partido.fecha}${partido.resultado ? " · " + partido.resultado : ""}`;
+
+    const cabeceras = partidos.map(partido =>
+      `<th><abbr title="${tooltip(partido).replace(/"/g,'&quot;')}">${etiqueta(partido)}</abbr></th>`
+    ).join("");
+
+    const filas = ranking.map(r => {
+      const celdas = partidos.map(partido => {
+        const pts = partido.puntos[r.nombre] || 0;
+        return `<td><span class="badge-pts ${pts===0?'cero':''}">${pts}</span></td>`;
+      }).join("");
+      return `<tr>
+        <td class="col-participante">${r.nombre}</td>
+        ${celdas}
+        <td class="puntos-total">${r.puntos}</td>
+      </tr>`;
+    }).join("");
+
+    cont.innerHTML = `
+      <table id="tabla-detalle">
+        <thead>
+          <tr>
+            <th class="col-participante">Participante</th>
+            ${cabeceras}
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>${filas}</tbody>
+      </table>
+    `;
+  }
+
+  document.getElementById("fecha-actualizacion").textContent =
+    new Date().toLocaleDateString("es-ES", { day:"numeric", month:"long", year:"numeric" });
+
+})();
+</script>
+
+</body>
+</html>
