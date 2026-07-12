@@ -260,23 +260,29 @@
 
 <!-- El "?v=" de abajo se cambia cada vez que se actualiza datos.js, para que el navegador
      de la gente no se quede con una copia antigua guardada en caché. -->
-<script src="datos.js?v=20260712-2"></script>
+<script src="datos.js?v=20260712-3"></script>
 <script>
 (function(){
 
-  // --- calcular totales ---
+  // --- calcular totales (puntos y partidos acertados) ---
   const totales = {};
-  participantes.forEach(p => totales[p] = 0);
+  const aciertos = {};
+  participantes.forEach(p => { totales[p] = 0; aciertos[p] = 0; });
   partidos.forEach(partido => {
+    const porAcierto = partido.puntosPorAcierto || 1;
     participantes.forEach(p => {
-      totales[p] += (partido.puntos[p] || 0);
+      const pts = partido.puntos[p] || 0;
+      totales[p] += pts;
+      aciertos[p] += pts / porAcierto;
     });
   });
 
   // --- ordenar clasificación ---
+  // Empate a puntos: gana quien tenga más partidos acertados en total (con independencia
+  // de en qué fase los acertara).
   const ranking = participantes
-    .map(p => ({ nombre: p, puntos: totales[p] }))
-    .sort((a,b) => b.puntos - a.puntos);
+    .map(p => ({ nombre: p, puntos: totales[p], aciertos: aciertos[p] }))
+    .sort((a,b) => (b.puntos - a.puntos) || (b.aciertos - a.aciertos));
 
   // --- puestos anteriores (para las flechas de subida/bajada) ---
   const puestoAnterior = {};
@@ -308,7 +314,7 @@
     tr.innerHTML = `
       <td><span class="puesto ${clase}">${puesto}</span></td>
       <td>${r.nombre}${cambioHtml}</td>
-      <td class="puntos-total">${r.puntos} pts</td>
+      <td class="puntos-total" title="${r.aciertos} partido(s) acertado(s) en total">${r.puntos} pts</td>
     `;
     tbody.appendChild(tr);
   });
