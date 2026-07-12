@@ -414,8 +414,11 @@ const partidos = [
 //    junto al título del recuadro). Edita la lista de partidos según se vayan jugando:
 //    quita los que ya se jugaron y añade los siguientes (semifinales, final, etc.), actualizando
 //    "puntosRonda" si cambia el valor de los puntos.
-const puntosRonda = 3;
-const proximosPartidos = [];
+const puntosRonda = 4;
+const proximosPartidos = [
+  { local: "Francia", banderaLocal: "🇫🇷", visitante: "España", banderaVisitante: "🇪🇸", fecha: "14 jul", hora: "21:00" },
+  { local: "Inglaterra", banderaLocal: "🏴", visitante: "Argentina", banderaVisitante: "🇦🇷", fecha: "15 jul", hora: "21:00" }
+];
 
 // 4) Ranking justo antes de esta última actualización (para poder mostrar flechas de
 //    subida/bajada en la clasificación). Cada vez que actualices los puntos:
